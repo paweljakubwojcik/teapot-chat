@@ -7,11 +7,103 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL")
+    url      = env("DB_URI")
 }
 
-model Post {
-    id      String @id @default(cuid())
-    title   String
-    content String
+model User {
+    id         String             @id @default(cuid())
+    createdAt  DateTime           @default(now())
+    updatedAt  DateTime           @updatedAt
+    email      String
+    username   String
+    password   String?
+    chats      Chat[]
+    messages   Message[]
+    reactions  Reaction[]
+    options    Options?
+    chatConfig UserConfigOnChat[]
+    session    Session?
+}
+
+model Session {
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+
+    token   String
+    expires DateTime
+
+    @@id([userId])
+}
+
+model Options {
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @id @unique
+    theme  String
+}
+
+model Chat {
+    id         String             @id @default(cuid())
+    createdAt  DateTime           @default(now())
+    updatedAt  DateTime           @updatedAt
+    users      User[]
+    messages   Message[]
+    config     ChatConfig?
+    userConfig UserConfigOnChat[]
+}
+
+model UserConfigOnChat {
+    chat   Chat   @relation(fields: [chatId], references: [id])
+    user   User   @relation(fields: [userId], references: [id])
+    chatId String
+    userId String
+
+    notificationLevel Boolean
+
+    @@id([chatId, userId])
+}
+
+model ChatConfig {
+    chat   Chat   @relation(fields: [chatId], references: [id])
+    chatId String @id
+
+    name    String?
+    bgColor String?
+}
+
+model Message {
+    id          String       @id @default(cuid())
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    body        String
+    attachments Attachment[]
+    chat        Chat         @relation(fields: [chatId], references: [id])
+    chatId      String
+    user        User         @relation(fields: [userId], references: [id])
+    userId      String
+    replyToId   String?      @unique
+    replyTo     Message?     @relation("replies", fields: [replyToId], references: [id])
+    replyFrom   Message[]    @relation("replies")
+    reactions   Reaction[]
+}
+
+model Attachment {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    message   Message? @relation(fields: [messageId], references: [id])
+    messageId String?
+    link      String
+}
+
+model Reaction {
+    message   Message? @relation(fields: [messageId], references: [id])
+    messageId String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    emoticon  String
+
+    @@id([messageId, userId])
+
 }
