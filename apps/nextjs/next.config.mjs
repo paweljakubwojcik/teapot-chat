@@ -14,7 +14,7 @@ function defineNextConfig(config) {
   return config;
 }
 
-export default withTM(["@acme/api", "@acme/db"])(
+export default withTM(["@teapot-chat/api", "@teapot-chat/db"])(
   defineNextConfig({
     reactStrictMode: true,
     swcMinify: true,
