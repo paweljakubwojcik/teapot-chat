@@ -11,10 +11,10 @@ datasource db {
 }
 
 model User {
-    id         String             @id @default(cuid())
+    id         String             @id
     createdAt  DateTime           @default(now())
     updatedAt  DateTime           @updatedAt
-    email      String
+    email      String?
     username   String
     password   String?
     chats      Chat[]
@@ -22,18 +22,8 @@ model User {
     reactions  Reaction[]
     options    Options?
     chatConfig UserConfigOnChat[]
-    session    Session?
 }
 
-model Session {
-    user   User   @relation(fields: [userId], references: [id])
-    userId String
-
-    token   String
-    expires DateTime
-
-    @@id([userId])
-}
 
 model Options {
     user   User   @relation(fields: [userId], references: [id])
@@ -46,8 +36,8 @@ model Chat {
     createdAt  DateTime           @default(now())
     updatedAt  DateTime           @updatedAt
     users      User[]
-    messages   Message[]
     config     ChatConfig?
+    messages   Message[]
     userConfig UserConfigOnChat[]
 }
 

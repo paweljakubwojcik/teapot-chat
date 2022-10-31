@@ -25,5 +25,10 @@
     "titleBar.inactiveBackground": "#84409699",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.remoteColor": "#844096"
+  "peacock.remoteColor": "#844096",
+  "cSpell.words": [
+    "nextjs",
+    "supabase",
+    "trpc"
+  ]
 }
